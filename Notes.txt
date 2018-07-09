@@ -1,0 +1,49 @@
+
+5/22/18
+Split orient into two parts. avoid() is now high level avoidance procedure.
+Currently accomplishes detection and orientation.
+
+********************************************************************************
+4/30/2018
+Since we don't have a whiteboard, I figured this would be the next best
+thing to share progress so we don't have to play catch-up every
+time we work separately!
+
+I reverted the autonomous method to a bunch of old commented code and
+put operational arm control stuff into its own method and expanded on it.
+Now we can have specific controls for the arm without impeding regular
+opcontrols.
+opcontrols.
+-Wheel functionality is back in opcontrol
+-The autonomous button we normally use now enters armControl (autonomous is
+ unbound)
+-While in armControl, the right button normally used to terminate will just
+ exit armControl and not terminate the program (unless pressed a second time).
+
+ Good luck, mydude.
+ ******************************************************************************
+
+5/1/18
+Short-term Goals:
+-Obstacle avoidance
+-Obstacle dimension detection
+  -Fixed sonar y-axis traversal
+-More precise line tracking
+
+Long-Term Goals:
+-Relaying obstacle information to Skippy boi
+
+5/14/18
+  Made correction to avoidance class function axisTurnUntilFound(). Turns until
+the current distance is greater than the previous distance. The idea being that
+Bart will be aiming closer to the center of the object (in theory?) and so
+he will not have to translate as many times.
+
+        .. Problems to overcome with this ^ ..
+  - How to tell when we are on the opposite side of the object, if we're trying
+  to maneuver around the object. Or if we are trying to map it's total area,
+  when do we arrive back to our original location?
+  + For now we could just use the line trackers and always have the object on
+  top of the line. That way when we are maneuvering around the object we can
+  go until we find the line. For mapping object we can go until we encounter
+  a second line .. the second line actually being the line we were initially on.
