@@ -19,6 +19,39 @@
 #define LEFT 0
 #define RIGHT 1
 
+/**
+ * Detects where the line is in relation to the robot and
+ * returns a number that reflects that error.
+ * If it detects a right angle, it calls the rightAngle function,
+ * else it calls the Proportional-Derivative (PD) function
+ */
+void errorCorrection();
+
+/**
+ * Translates until line is found
+ * @param right(1) or left(0) translation
+ */
+void translate(int right);
+
+
+/**
+ * Proportional-Derivative Control
+ * Corrects motor speeds on both motors depending on
+ * how large the error is, and the time it took for errors to change.
+ */
+void PD(int error);
+
+/**
+ * @return which sensors are hitting the line
+ */
+int sensorDetection();
+
+/**
+ * Prints sensor values and control variables
+ * @param sensorDetection variable
+ */
+void printDiagnostics(int sensors);
+
 static float KP = 0.15; //.15 //0.3 3/20
 static float KD = 0.6; //0.6 3/20
 //static float KI = 0.0001;
@@ -32,9 +65,17 @@ int lastRearError;
 int lastTime;
 int printCount = 0;
 int error;
-//int
-// Flag to invert right angle turing
-int rightInversion = 0;
+
+void lineTrack() {
+  int track = true;
+  while (track) {
+    if (joystickGetDigital(CONTROLLER, RIGHT_BUTT_SET, JOY_DOWN)) {
+      track = false;
+      delay(500);
+    }
+    errorCorrection();
+  }
+}
 
 void errorCorrection() {
   error = 0;
@@ -63,15 +104,12 @@ void errorCorrection() {
   // Dual sensor correction
   case FRONT_RIGHT + CENTER_RIGHT:
     error = degree[1];
-    //translate(LEFT);
     break;
   case FRONT_LEFT + CENTER_LEFT:
     error = -degree[1];
-    //translate(RIGHT);
     break;
 
   // Translational cases
-
   case FRONT_RIGHT + REAR_RIGHT:
   case FRONT_RIGHT + CENTER_RIGHT + REAR_RIGHT:
     translate(RIGHT);
@@ -84,13 +122,11 @@ void errorCorrection() {
   //Rotational cases
   case REAR_RIGHT+FRONT_LEFT:
   case REAR_RIGHT+CENTER_LEFT:
-    //rotate(LEFT);
     error = -degree[1];
           break;
   case REAR_LEFT+FRONT_RIGHT:
   case REAR_LEFT+CENTER_RIGHT:
-    //rotate(RIGHT);
-    error = degree[1];//[2]
+    error = degree[1];
           break;
   case FRONT_LEFT + CENTER_LEFT + REAR_LEFT +
        FRONT_RIGHT + CENTER_RIGHT + REAR_RIGHT:
@@ -162,9 +198,7 @@ void printDiagnostics(int sensors) {
 }
 
 void translate(int right) {
-  printf("Translating! :O\n");
   int detect = sensorDetection();
-
   //Continue transition while front left/right are on line
   while(detect & FRONT_LEFT ||
         detect & FRONT_RIGHT) {
@@ -176,56 +210,6 @@ void translate(int right) {
     detect = sensorDetection();
   }
 }
-
-
-void rotate(int right) {
-  //while(sensorDetection())
-  aTurn(right, baseSpeed, baseSpeed);
-    printf("Rotating.. d-_-b\n");
-    /*
-    int detect = sensorDetection();
-
-    while(detect & (REAR_RIGHT+FRONT_LEFT) || detect & (REAR_RIGHT+CENTER_LEFT) ||
-         detect & (REAR_LEFT+FRONT_RIGHT) || detect & (REAR_LEFT+CENTER_RIGHT))
-    {
-      if (right)
-        aTurn(right, baseSpeed, baseSpeed);
-        else
-        aTurn(LEFT, baseSpeed, baseSpeed);
-        detect = sensorDetection();
-    }*/
-}
-
-
-/*
- //Detects if a right angle has been encountered.
- //If it has, deploy rotation.
- void rightAngleDetection()
- {
-        //Right Angle Correction
-                if ((analogRead(FRONT_RIGHT) < threshold &&
- analogRead(FRONT_CENTER) <
-                        threshold) || (analogRead(REAR_CENTER) < threshold &&
- analogRead(REAR_RIGHT) < threshold))
-                                rightAngle(1);
-                if ((analogRead(FRONT_RIGHT) < threshold &&
- analogRead(FRONT_CENTER) <
-                                threshold) || (analogRead(REAR_CENTER) <
- threshold && analogRead(REAR_RIGHT) < threshold))
-                                rightAngle(1);
-
-                if (analogRead(FRONT_LEFT) < threshold &&
- analogRead(FRONT_CENTER) <
-                        threshold || analogRead(REAR_LEFT) < threshold &&
- analogRead(REAR_CENTER))
-                                rightAngle(0);
-                if (analogRead(FRONT_LEFT) < threshold &&
- analogRead(FRONT_CENTER) <
-                                threshold || analogRead(REAR_LEFT) < threshold
- && analogRead(REAR_CENTER))
-                                rightAngle(0);
-        }
-*/
 
 void PD(int error) {
   float derivative = 0;
@@ -258,14 +242,6 @@ void PD(int error) {
     leftMotorSet((baseSpeed + motorSpeed));
   }
 
-  // int leftSpeed = baseSpeed + motorSpeed;
-  // int rightSpeed = baseSpeed - motorSpeed;
-
-  if (error != 0) { //&& printCount == 10) {
-    //printf("Proposed Right: %d\n", (baseSpeed - motorSpeed));
-    //printf("Proposed Left: %d\n\n", (baseSpeed + motorSpeed));
-  }
-
   // Motor Bound Check
   if (getRightFront() < lowBound)
     rightMotorSet(lowBound);
@@ -275,47 +251,4 @@ void PD(int error) {
     rightMotorSet(highBound);
   if (getLeftRear() > highBound)
     leftMotorSet(highBound);
-}
-
-/*
-//Checks to see if the back left or right sensor is the only sensor being
-detected.
-//If so, commence rotation.
-int checkOnlySensor(int sensor)
-{
-        switch(sensor) {
-                case 3: if (analogRead(REAR_LEFT) < threshold &&
-analogRead(REAR_RIGHT) > threshold &&
-                                                                analogRead(REAR_CENTER)
-> threshold && analogRead(FRONT_LEFT) > threshold &&
-                                                                analogRead(FRONT_CENTER)
-> threshold && analogRead(FRONT_RIGHT) > threshold)
-                                                                return 1;
-                case 4: if (analogRead(REAR_RIGHT) < threshold &&
-analogRead(REAR_LEFT) > threshold &&
-                                                                analogRead(REAR_CENTER)
-> threshold && analogRead(FRONT_LEFT) > threshold &&
-                                                                analogRead(FRONT_CENTER)
-> threshold && analogRead(FRONT_RIGHT) > threshold)
-                                                                return 1;
-                return 0;
-        }
-        return 0;
-}*/
-
-// A wild right angle has appeared.
-// Bartholemew used rotation.
-// It's super effective! <- lol
-void rightAngle(int right) {
-  // Peform rotation until Bart is aligned with the line
-  // This is a comment
-  if (right) {
-    // while (analogRead(RIGHT_FRONT) > threshold)
-    rotate(RIGHT);
-  } else {
-    // while (analogRead(LEFT_FRONT) > threshold)
-    rotate(LEFT);
-  }
-
-  // lastTime = millis();
 }

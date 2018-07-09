@@ -38,6 +38,8 @@ extern "C" {
 // actual code. If a function does not match a prototype, compile errors will occur.
 
 // Prototypes for initialization, operator control and autonomous
+#define CONTROLLER 1
+
 #define IME_REAR_LEFT 0
 #define IME_FRONT_RIGHT 1
 #define NUM_IME 2
