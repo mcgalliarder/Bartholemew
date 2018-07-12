@@ -10,7 +10,7 @@ request, initiating the line of communication.
 
 ## Transmission
 
-**Single Request**
+### Single Request
 - *This requests the receiving party to listen for a single data packet*
 - To request a single transmit to the other party, the transmitting party must send
    the SINGLE_REQUEST(0xA5) byte to the receiving party
@@ -23,7 +23,7 @@ request, initiating the line of communication.
     response, it results in a FAILED state, as this indicates the parties
     are out of sync.
 
-**Multi Request**
+### Multi Request
 - *This requests the receiving party to listen for multiple data packets*
 - To request muliple transmissions to the other party, the transmitting party must send
    the MULTI_REQUEST(0xA6) byte to the receiving party.
@@ -31,9 +31,7 @@ request, initiating the line of communication.
   not reset states after one data packet
 
 ## Receiving
-
-**Receive Handshake**
-- A party must always be looking for a transmission to them - utilizing a
+- A party must always be looking for a request to them - utilizing a
   separate thread to constantly check for a REQUEST byte.
 - Once a request byte is received, the receiving party must always CONFIRM
    unless the party is undergoing any of the following:
