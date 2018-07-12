@@ -4,9 +4,14 @@ This protocol uses two wireless UART transmitters attached to usart2 on both VEX
 ## Handshake 
 To initiate a communication line between the two parties, a handshake
 between the two must occur.  A handshake must occur for EVERY transmission
-to establish who is talking and who is listening.
+to establish who is talking and who is listening.  A handshake occors when
+when party makes a request to the other, and the other party confirms that
+request, initiating the line of communication.
 
-**Transmit Single Request**
+## Transmission
+
+**Single Request**
+- *This requests the receiving party to listen for a single data packet*
 - To request a single transmit to the other party, the transmitting party must send
    the SINGLE_REQUEST(0xA5) byte to the receiving party
 - The transmitting party must wait to receive one of two responses
@@ -18,11 +23,14 @@ to establish who is talking and who is listening.
     response, it results in a FAILED state, as this indicates the parties
     are out of sync.
 
-**Transmit Multi Request**
+**Multi Request**
+- *This requests the receiving party to listen for multiple data packets*
 - To request muliple transmissions to the other party, the transmitting party must send
    the MULTI_REQUEST(0xA6) byte to the receiving party.
 - Multi Request works much the same way as single request, except that the two parties do
-  not reset states after one payload
+  not reset states after one data packet
+
+## Receiving
 
 **Receive Handshake**
 - A party must always be looking for a transmission to them - utilizing a
