@@ -1,4 +1,4 @@
-# Wireless Communication Protocol
+# Wireless Communication Protocol 
 This protocol uses two wireless UART transmitters attached to usart2 on both VEX robots
 
 ## Handshake 
@@ -10,8 +10,8 @@ request, initiating the line of communication.
 
 ## Transmission
 
-### Single Request
-- *This requests the receiving party to listen for a single data packet*
+#### Single Request
+*This requests the receiving party to listen for a single data packet*
 - To request a single transmit to the other party, the transmitting party must send
    the SINGLE_REQUEST(0xA5) byte to the receiving party
 - The transmitting party must wait to receive one of two responses
@@ -23,8 +23,8 @@ request, initiating the line of communication.
     response, it results in a FAILED state, as this indicates the parties
     are out of sync.
 
-### Multi Request
-- *This requests the receiving party to listen for multiple data packets*
+#### Multi Request
+*This requests the receiving party to listen for multiple data packets*
 - To request muliple transmissions to the other party, the transmitting party must send
    the MULTI_REQUEST(0xA6) byte to the receiving party.
 - Multi Request works much the same way as single request, except that the two parties do
