@@ -3,7 +3,7 @@ This protocol uses two wireless UART transmitters attached to usart2 on both VEX
 
 ## Handshake 
 To initiate a communication line between the two parties, a handshake
-between the two must occur.  A handshake must occur for EVERY transmission
+between the two must occur.  A handshake must occur for *every* transmission
 to establish who is talking and who is listening.  A handshake occors when
 when party makes a request to the other, and the other party confirms that
 request, initiating the line of communication.
