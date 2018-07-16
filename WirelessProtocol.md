@@ -47,6 +47,12 @@ request, initiating the line of communication.
 - if in multi request mode, the receiving party will endlessly collect and perform
   commands from the transmitting party unless it receives a byte other than a START_BYTE
   at the beginning of a new data packet or if the checksum fails
+  
+## Pinging
+The only instance when a handshake is not required is a PING (0x15). Instead of going through
+the collect and decode proceedures following a REQUEST byte, a PING byte will
+immediately return a CONFIRM without changing states.  The transmitting party will use this to
+judge timing and distance to the recieving party.
 
 ## Data Packet Structure 
 Once a handshake is received and confirmed, the transmitting party
